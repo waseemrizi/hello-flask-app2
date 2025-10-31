@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_IMAGE = 'waseemrizi/hello-flask:latest'
+        DOCKER_IMAGE = 'waseemrizi/hello-flask-app2:latest'
         KUBECONFIG = '/root/.kube/config'
     }
 
@@ -30,7 +30,13 @@ pipeline {
 
         stage('Deploy to K3s') {
             steps {
-                sh 'kubectl apply -f k8s-deployment.yaml'
+                sh '''
+                echo "Deploying to K3s..."
+                kubectl apply -f k8s-deployment.yaml
+                kubectl rollout status deployment/hello-flask2 || true
+                kubectl get pods -o wide
+                kubectl get svc -o wide
+                '''
             }
         }
     }
